@@ -2,7 +2,7 @@
   "name": "@corbits/xai-provider",
   "version": "0.1.0",
   "description": "xAI (Grok) OAuth config, token mapping, and a Responses adapter configured for xAI's CLI chat proxy.",
-  "license": "LGPL-2.1-or-later",
+  "license": "LGPL-2.1-only",
   "author": "Sawyer Cutler <sawyer@dirtroad.dev>",
   "type": "module",
   "sideEffects": false,
