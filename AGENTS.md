@@ -40,7 +40,6 @@ re-resolves from git and drops the link.
 
 The package ships TypeScript source: `exports` points at `src/index.ts`,
 there is no build step and no `dist/`. Consumers install it with
-`bun add github:corbitsdev/corbits-xai-provider` and Bun runs the source
-as-is. `bun.lock` is committed once the two `@corbits/*` repos it depends on
-are on GitHub, since a lockfile generated against local links would not
-resolve for anyone else.
+`bun add @corbits/xai-provider` and Bun runs the source as-is. `bun.lock`
+is committed; the two `@corbits/*` dependencies still resolve from their
+GitHub repos and switch to npm version ranges at publish time.

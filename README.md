@@ -9,7 +9,7 @@ dependency packages directly.
 ## Install
 
 ```sh
-bun add github:corbitsdev/corbits-xai-provider
+bun add @corbits/xai-provider
 ```
 
 The package ships TypeScript source and needs no build step; Bun consumes it
@@ -56,7 +56,32 @@ shown in that package's own README. Persistence is the host (Interchange
 
 ## API
 
-See `src/index.ts` for the full public surface and its TSDoc.
+The full public surface lives in `src/index.ts` (see its TSDoc); the exports
+are:
+
+Constants (`src/constants.ts`):
+
+- `XAI_PROVIDER` — suggested provider id to register the adapter under.
+- `XAI_OAUTH_PROXY_BASE_URL` — CLI chat proxy base URL for OAuth tokens.
+- `XAI_API_KEY_BASE_URL` — base URL for a plain API key credential.
+- `XAI_DEFAULT_MODELS` — model ids the CLI chat proxy serves.
+- `XAI_REDIRECT_URI` — loopback OAuth callback URI.
+- `XAI_REFRESH_SKEW_MS` — how far ahead of expiry a host should refresh.
+- `XAI_USER_ID_OPTION`, `XAI_SESSION_ID_OPTION`,
+  `XAI_REASONING_EFFORT_OPTION` — `providerOptions` keys.
+
+OAuth (`src/oauth.ts`):
+
+- `xaiOAuthConfig` — PKCE client config for `@corbits/oauth-core`.
+- `xaiTokensFromResponse` — maps a token response onto `XaiTokens`.
+- `exchangeXaiCode` / `refreshXaiTokens` — code exchange and refresh.
+- `xaiUserIdFromAccessToken` — decodes the JWT `sub` claim, never verified.
+- `type XaiTokens` — base tokens plus an optional `idToken`.
+
+Adapter (`src/responses-adapter.ts`):
+
+- `createXaiResponsesAdapter` — `AdapterFactory` for the CLI chat proxy.
+- `xaiResponsesQuirks` — the quirks bag it is configured with.
 
 ## Design notes
 
