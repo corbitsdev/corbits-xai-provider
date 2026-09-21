@@ -2,7 +2,11 @@
 
 xAI/Grok PKCE OAuth config and token mapping over `@corbits/oauth-core`, a base URL for a plain API key, and a Responses adapter for xAI's CLI chat proxy over `@corbits/openai-responses`. It does not run a login or manage a session — the host wires those from the two dependency packages.
 
-## Install
+## Runtime support
+
+Bun >= 1.2 runs the published TypeScript source. Node >= 24 is an engines floor for tooling; native Node does not load this extensionless TypeScript source as-is. `@intx/inference` and `@intx/types` are peer dependencies and must resolve to the host's own copy.
+
+## Quickstart
 
 ```sh
 npm add @corbits/xai-provider
@@ -10,10 +14,6 @@ pnpm add @corbits/xai-provider
 yarn add @corbits/xai-provider
 bun add @corbits/xai-provider
 ```
-
-Requires Node >= 24 and Bun >= 1.2. The package ships TypeScript source; Bun consumes it directly. `@intx/inference` and `@intx/types` are peer dependencies and must resolve to the host's own copy.
-
-## Use
 
 ```ts
 import type { AdapterManifest } from "@intx/inference";
@@ -37,8 +37,6 @@ void manifest;
 ```
 
 `xaiOAuthConfig`, `exchangeXaiCode`, and `refreshXaiTokens` plug into `@corbits/oauth-core`. Persistence is the host (Interchange `oauth_token` or OS vault).
-
-## Full example
 
 ```ts
 import type { InferenceSource } from "@intx/types/runtime";
@@ -67,9 +65,11 @@ An OAuth (grok CLI) credential hits `XAI_OAUTH_PROXY_BASE_URL` and only serves `
 
 This package supplies xAI's endpoints, client id, and token mapping; login and refresh stay in `@corbits/oauth-core`. Requests identify as the official grok CLI because the CLI chat proxy only serves that client. `xaiUserIdFromAccessToken` decodes JWT `sub` and never verifies the signature — it labels a header, it is not an authorization decision.
 
-## Contributing
+## Development
 
 ```sh
+git clone https://github.com/corbitsdev/corbits-xai-provider.git
+cd corbits-xai-provider
 bun install
 bun run typecheck
 bun run lint
