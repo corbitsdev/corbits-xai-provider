@@ -1,117 +1,84 @@
 # @corbits/xai-provider
 
-xAI/Grok's PKCE OAuth config and token mapping over `@corbits/oauth-core`, a
-base URL for a plain API key, and a Responses adapter configured for xAI's
-CLI chat proxy over `@corbits/openai-responses`. It does not run a login
-flow or manage a session itself — a host wires those from the two
-dependency packages directly.
+xAI/Grok PKCE OAuth config and token mapping over `@corbits/oauth-core`, a base URL for a plain API key, and a Responses adapter for xAI's CLI chat proxy over `@corbits/openai-responses`. It does not run a login or manage a session — the host wires those from the two dependency packages.
 
 ## Install
 
 ```sh
+npm add @corbits/xai-provider
+pnpm add @corbits/xai-provider
+yarn add @corbits/xai-provider
 bun add @corbits/xai-provider
 ```
 
-Requires Node >= 24 and Bun >= 1.2.
+Requires Node >= 24 and Bun >= 1.2. The package ships TypeScript source; Bun consumes it directly. `@intx/inference` and `@intx/types` are peer dependencies and must resolve to the host's own copy.
 
-The package ships TypeScript source and needs no build step; Bun consumes it
-directly. `@intx/inference` and `@intx/types` are peer dependencies and
-resolve to the host's own copy.
-
-## Usage
+## Use
 
 ```ts
 import type { AdapterManifest } from "@intx/inference";
-import { createDefaultScheduler } from "@intx/inference";
-import { loadAdapterRegistry } from "@intx/inference/providers";
-import type { InferenceSource } from "@intx/types/runtime";
-import { XAI_OAUTH_PROXY_BASE_URL } from "@corbits/xai-provider";
+import {
+  XAI_PROVIDER,
+  createXaiResponsesAdapter,
+  xaiOAuthConfig,
+} from "@corbits/xai-provider";
 
 const manifest: AdapterManifest = [
   {
-    provider: "xai",
+    provider: XAI_PROVIDER,
     specifier: "@corbits/xai-provider",
     export: "createXaiResponsesAdapter",
   },
 ];
 
-const adapters = await loadAdapterRegistry(manifest);
-// Host wires `dependencies` (adapters, fetch, scheduler) as usual for
-// @intx/inference.
-
-// An OAuth (grok CLI) credential hits the CLI chat proxy and only serves
-// XAI_DEFAULT_MODELS; a plain API key hits XAI_API_KEY_BASE_URL instead.
-// The current access token goes on `apiKey` — the harness injects it at send.
-const source: InferenceSource = {
-  id: "xai/1",
-  provider: "xai",
-  baseURL: XAI_OAUTH_PROXY_BASE_URL,
-  apiKey: "<access token>",
-  model: "grok-4.5",
-};
+void createXaiResponsesAdapter;
+void xaiOAuthConfig;
+void manifest;
 ```
 
-`xaiOAuthConfig`, `exchangeXaiCode`, and `refreshXaiTokens` plug directly
-into `@corbits/oauth-core`'s `startOAuthLogin` and `createTokenSession`, as
-shown in that package's own README. Persistence is the host (Interchange
-`oauth_token` or OS vault).
+`xaiOAuthConfig`, `exchangeXaiCode`, and `refreshXaiTokens` plug into `@corbits/oauth-core`. Persistence is the host (Interchange `oauth_token` or OS vault).
 
-## API
+## Full example
 
-The full public surface lives in `src/index.ts` (see its TSDoc); the exports
-are:
+```ts
+import type { InferenceSource } from "@intx/types/runtime";
+import {
+  XAI_DEFAULT_MODELS,
+  XAI_OAUTH_PROXY_BASE_URL,
+  XAI_PROVIDER,
+  createXaiResponsesAdapter,
+} from "@corbits/xai-provider";
 
-Constants (`src/constants.ts`):
+const source: InferenceSource = {
+  id: "xai/1",
+  provider: XAI_PROVIDER,
+  baseURL: XAI_OAUTH_PROXY_BASE_URL,
+  apiKey: "<access token>",
+  model: XAI_DEFAULT_MODELS[0],
+};
 
-- `XAI_PROVIDER` — suggested provider id to register the adapter under.
-- `XAI_OAUTH_PROXY_BASE_URL` — CLI chat proxy base URL for OAuth tokens.
-- `XAI_API_KEY_BASE_URL` — base URL for a plain API key credential.
-- `XAI_DEFAULT_MODELS` — model ids the CLI chat proxy serves.
-- `XAI_REDIRECT_URI` — loopback OAuth callback URI.
-- `XAI_REFRESH_SKEW_MS` — how far ahead of expiry a host should refresh.
-- `XAI_USER_ID_OPTION`, `XAI_SESSION_ID_OPTION`,
-  `XAI_REASONING_EFFORT_OPTION` — `providerOptions` keys.
+const adapter = createXaiResponsesAdapter(source);
+void adapter;
+```
 
-OAuth (`src/oauth.ts`):
+An OAuth (grok CLI) credential hits `XAI_OAUTH_PROXY_BASE_URL` and only serves `XAI_DEFAULT_MODELS`. A plain API key hits `XAI_API_KEY_BASE_URL` instead. The current access token goes on `apiKey` — the harness injects it at send.
 
-- `xaiOAuthConfig` — PKCE client config for `@corbits/oauth-core`.
-- `xaiTokensFromResponse` — maps a token response onto `XaiTokens`.
-- `exchangeXaiCode` / `refreshXaiTokens` — code exchange and refresh.
-- `xaiUserIdFromAccessToken` — decodes the JWT `sub` claim, never verified.
-- `type XaiTokens` — base tokens plus an optional `idToken`.
+## How it works
 
-Adapter (`src/responses-adapter.ts`):
+This package supplies xAI's endpoints, client id, and token mapping; login and refresh stay in `@corbits/oauth-core`. Requests identify as the official grok CLI because the CLI chat proxy only serves that client. `xaiUserIdFromAccessToken` decodes JWT `sub` and never verifies the signature — it labels a header, it is not an authorization decision.
 
-- `createXaiResponsesAdapter` — `AdapterFactory` for the CLI chat proxy.
-- `xaiResponsesQuirks` — the quirks bag it is configured with.
+## Contributing
 
-## Design notes
+```sh
+bun install
+bun run typecheck
+bun run lint
+bun run format:check
+bun run test
+bun run check
+```
 
-- OAuth login and session refresh are not reimplemented here — this package
-  supplies only xAI's endpoints, client id, and token mapping; the host
-  calls `@corbits/oauth-core` directly.
-- Requests identify as the official grok CLI (`user-agent`,
-  `x-grok-client-identifier`) because the CLI chat proxy only serves that
-  client; a vendor policy change can break this package with no code
-  change on our side.
-- `xaiUserIdFromAccessToken` never verifies the JWT signature: it only
-  labels a header value with the id the issuer already vouched for by
-  issuing the token, never an authorization decision.
-- The host chooses the provider id it registers `createXaiResponsesAdapter`
-  under (`XAI_PROVIDER` is only a suggested default); `tagSignature` inside
-  `@corbits/openai-responses` keys reasoning-signature replay on that id, so
-  renaming it later invalidates previously stored signatures.
-
-## Not supported
-
-- OAuth credentials work only against the CLI chat proxy and only for
-  `XAI_DEFAULT_MODELS`; a plain API key against `XAI_API_KEY_BASE_URL` is
-  the path for anything else.
-- No xAI-specific tools (e.g. Live Search).
-- The pinned user-agent/client-version may need bumping if the proxy starts
-  rejecting old versions; it also always claims `(macos; aarch64)`
-  regardless of the host's actual OS, matching what the proxy expects from
-  the official grok CLI.
+`bun run format` rewrites the tree. `bun run check` is typecheck + lint + format:check + test.
 
 ## License
 
