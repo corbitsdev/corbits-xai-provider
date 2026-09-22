@@ -1,6 +1,6 @@
 # @corbits/xai-provider
 
-xAI Grok PKCE OAuth config and token mapping over `@corbits/oauth-core`, base URLs for the OAuth CLI chat proxy and plain API keys, and a Responses adapter for xAI's CLI chat proxy over `@corbits/openai-responses`. It does not run a login or manage a session — the host wires those from the two dependency packages.
+xAI Grok PKCE OAuth config and token mapping to slot into `@corbits/oauth-core`'s `mountOAuthLogin`, plus a Responses adapter for xAI's CLI chat proxy over `@corbits/openai-responses`. This package never runs a login, stores a credential, or serves inference itself — the host wires those from the two dependency packages.
 
 ## Runtime support
 
@@ -15,25 +15,52 @@ yarn add @corbits/xai-provider
 bun add @corbits/xai-provider
 ```
 
-Register the adapter under the host's provider id, then build it for a source. `xaiOAuthConfig`, `exchangeXaiCode`, and `refreshXaiTokens` plug into `@corbits/oauth-core`'s `buildAuthorizeUrl`, `exchangeCode`, and `refreshTokenRequest`. Persistence is the host (Interchange `oauth_token` or OS vault).
+Register xAI as one entry in the host's `OAuthLoginProviders` map and pass it to `@corbits/oauth-core/hub`'s `mountOAuthLogin`. The host owns persistence (credential storage, the grant check, the tenant router) — this package only supplies the OAuth config and the code exchange/refresh:
 
 ```ts
-import type { AdapterManifest } from "@intx/inference";
-import type { LastCycleSource } from "@intx/types/runtime";
+import type { OAuthLoginProviders } from "@corbits/oauth-core/hub";
+import { mountOAuthLogin } from "@corbits/oauth-core/hub";
 import {
-  XAI_DEFAULT_MODELS,
   XAI_PROVIDER,
-  createXaiResponsesAdapter,
+  xaiOAuthConfig,
+  exchangeXaiCode,
+  refreshXaiTokens,
 } from "@corbits/xai-provider";
 
-// Host-owned: register the adapter under the host's provider id.
-export const inferenceManifest: AdapterManifest = [
-  {
-    provider: XAI_PROVIDER,
-    specifier: "@corbits/xai-provider",
-    export: "createXaiResponsesAdapter",
+const oauthProviders: OAuthLoginProviders = {
+  [XAI_PROVIDER]: {
+    oauthConfig: xaiOAuthConfig,
+    exchange: (code: string, verifier: string, now: number) =>
+      exchangeXaiCode(code, verifier, now),
+    refresh: (refreshSecret: string, now: number) =>
+      refreshXaiTokens(refreshSecret, now),
   },
-];
+};
+
+mountOAuthLogin(oauthLoginApi, {
+  db,
+  cipher: credentialCipher,
+  requireGrant: requireGrant("credential:*", "create"),
+  providers: oauthProviders,
+  onError: (error, { provider }) => {
+    reportError(error, { operation: "hub.oauth-login", extra: { provider } });
+  },
+});
+```
+
+`oauthLoginApi`, `db`, `credentialCipher`, `requireGrant`, and `reportError` are the host's own — see `@corbits/oauth-core`'s README for `mountOAuthLogin`'s full options.
+
+### Registering the inference adapter
+
+A sidecar loads `createXaiResponsesAdapter` by specifier at boot, keyed by the same `XAI_PROVIDER` id, e.g. from an `AdapterManifest` entry: `{"provider":"xai","specifier":"@corbits/xai-provider","export":"createXaiResponsesAdapter"}`. `@intx/inference`'s `loadAdapterFactories` turns that manifest into a `Record<string, AdapterFactory>`; the factory is called with a `LastCycleSource` once a run needs to send:
+
+```ts
+import {
+  createXaiResponsesAdapter,
+  XAI_DEFAULT_MODELS,
+  XAI_PROVIDER,
+} from "@corbits/xai-provider";
+import type { LastCycleSource } from "@intx/types/runtime";
 
 const source: LastCycleSource = {
   sourceId: "xai/1",
@@ -41,7 +68,7 @@ const source: LastCycleSource = {
   model: XAI_DEFAULT_MODELS[0],
 };
 
-export const adapter = createXaiResponsesAdapter(source);
+const adapter = createXaiResponsesAdapter(source);
 ```
 
 An OAuth (grok CLI) credential hits `XAI_OAUTH_PROXY_BASE_URL` and only serves `XAI_DEFAULT_MODELS`. A plain API key hits `XAI_API_KEY_BASE_URL` instead. Reasoning effort, the xAI user id, and the inference session id ride as provider options under `XAI_REASONING_EFFORT_OPTION`, `XAI_USER_ID_OPTION`, and `XAI_SESSION_ID_OPTION`. `xaiUserIdFromAccessToken` decodes the user id out of an access token's JWT `sub` claim and never verifies the signature — it labels a header, it is not an authorization decision.
