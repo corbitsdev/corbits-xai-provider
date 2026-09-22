@@ -1,6 +1,6 @@
 # @corbits/xai-provider
 
-xAI/Grok PKCE OAuth config and token mapping over `@corbits/oauth-core`, a base URL for a plain API key, and a Responses adapter for xAI's CLI chat proxy over `@corbits/openai-responses`. It does not run a login or manage a session — the host wires those from the two dependency packages.
+xAI/Grok PKCE OAuth config and token mapping over `@corbits/oauth-core`, a base URL for a plain API key, and a Responses adapter for xAI's CLI chat proxy over `@corbits/openai-responses`. Login and session management wire up in the host from the two dependency packages.
 
 ## Runtime support
 
@@ -59,7 +59,7 @@ const adapter = createXaiResponsesAdapter(source);
 void adapter;
 ```
 
-An OAuth (grok CLI) credential hits `XAI_OAUTH_PROXY_BASE_URL` and only serves `XAI_DEFAULT_MODELS`. A plain API key hits `XAI_API_KEY_BASE_URL` instead. The current access token goes on `apiKey` — the harness injects it at send.
+An OAuth (grok CLI) credential hits `XAI_OAUTH_PROXY_BASE_URL` and only serves `XAI_DEFAULT_MODELS`. A plain API key hits `XAI_API_KEY_BASE_URL` instead. The current access token goes on `apiKey` — the host injects it at send.
 
 ## How it works
 
