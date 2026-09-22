@@ -1,12 +1,10 @@
 # @corbits/xai-provider
 
-xAI/Grok PKCE OAuth config and token mapping over `@corbits/oauth-core`, a base URL for a plain API key, and a Responses adapter for xAI's CLI chat proxy over `@corbits/openai-responses`. Login and session management wire up in the host from the two dependency packages.
-
-## Runtime support
-
-Bun >= 1.2 runs the published TypeScript source. Node >= 24 is an engines floor for tooling; native Node does not load this extensionless TypeScript source as-is. `@intx/inference` and `@intx/types` are peer dependencies and must resolve to the host's own copy.
+xAI Grok PKCE OAuth config and token mapping over `@corbits/oauth-core`, base URLs for the OAuth CLI chat proxy and plain API keys, and a Responses adapter for xAI's CLI chat proxy over `@corbits/openai-responses`. It does not run a login or manage a session — the host wires those from the two dependency packages.
 
 ## Quickstart
+
+Bun >= 1.2 runs the published TypeScript source. Node >= 24 is an engines floor for tooling; native Node does not load this extensionless TypeScript source as-is. `@intx/inference` and `@intx/types` are peer dependencies and must resolve to the host's own copy.
 
 ```sh
 npm add @corbits/xai-provider
@@ -17,53 +15,42 @@ bun add @corbits/xai-provider
 
 ```ts
 import type { AdapterManifest } from "@intx/inference";
-import {
-  XAI_PROVIDER,
-  createXaiResponsesAdapter,
-  xaiOAuthConfig,
-} from "@corbits/xai-provider";
+import { XAI_PROVIDER } from "@corbits/xai-provider";
 
-const manifest: AdapterManifest = [
+// Host-owned: register the adapter under the host's provider id.
+export const inferenceManifest: AdapterManifest = [
   {
     provider: XAI_PROVIDER,
     specifier: "@corbits/xai-provider",
     export: "createXaiResponsesAdapter",
   },
 ];
-
-void createXaiResponsesAdapter;
-void xaiOAuthConfig;
-void manifest;
 ```
 
-`xaiOAuthConfig`, `exchangeXaiCode`, and `refreshXaiTokens` plug into `@corbits/oauth-core`. Persistence is the host (Interchange `oauth_token` or OS vault).
+`xaiOAuthConfig`, `exchangeXaiCode`, and `refreshXaiTokens` plug into `@corbits/oauth-core`'s `buildAuthorizeUrl`, `exchangeCode`, and `refreshTokenRequest`. Persistence is the host (Interchange `oauth_token` or OS vault).
 
 ```ts
-import type { InferenceSource } from "@intx/types/runtime";
+import type { LastCycleSource } from "@intx/types/runtime";
 import {
   XAI_DEFAULT_MODELS,
-  XAI_OAUTH_PROXY_BASE_URL,
   XAI_PROVIDER,
   createXaiResponsesAdapter,
 } from "@corbits/xai-provider";
 
-const source: InferenceSource = {
-  id: "xai/1",
+const source: LastCycleSource = {
+  sourceId: "xai/1",
   provider: XAI_PROVIDER,
-  baseURL: XAI_OAUTH_PROXY_BASE_URL,
-  apiKey: "<access token>",
   model: XAI_DEFAULT_MODELS[0],
 };
 
-const adapter = createXaiResponsesAdapter(source);
-void adapter;
+export const adapter = createXaiResponsesAdapter(source);
 ```
 
-An OAuth (grok CLI) credential hits `XAI_OAUTH_PROXY_BASE_URL` and only serves `XAI_DEFAULT_MODELS`. A plain API key hits `XAI_API_KEY_BASE_URL` instead. The current access token goes on `apiKey` — the host injects it at send.
+An OAuth (grok CLI) credential hits `XAI_OAUTH_PROXY_BASE_URL` and only serves `XAI_DEFAULT_MODELS`. A plain API key hits `XAI_API_KEY_BASE_URL` instead. Reasoning effort, the xAI user id, and the inference session id ride as provider options under `XAI_REASONING_EFFORT_OPTION`, `XAI_USER_ID_OPTION`, and `XAI_SESSION_ID_OPTION`. `xaiUserIdFromAccessToken` decodes the user id out of an access token's JWT `sub` claim and never verifies the signature — it labels a header, it is not an authorization decision.
 
 ## How it works
 
-This package supplies xAI's endpoints, client id, and token mapping; login and refresh stay in `@corbits/oauth-core`. Requests identify as the official grok CLI because the CLI chat proxy only serves that client. `xaiUserIdFromAccessToken` decodes JWT `sub` and never verifies the signature — it labels a header, it is not an authorization decision.
+This package supplies xAI's endpoints, client id, and token mapping; login and refresh stay in `@corbits/oauth-core`. Requests identify as the grok CLI (`grok-shell`) via `x-grok-*` headers, mirroring the CLI's own `/v1/responses` request. The system prompt rides as a leading `system` message with plain string content; reasoning is always requested at `detailed` summary depth with the caller's effort forwarded. The proxy's own request never sends `max_output_tokens`, `temperature`, or `parallel_tool_calls`, so neither does the adapter.
 
 ## Development
 
