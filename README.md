@@ -2,9 +2,11 @@
 
 xAI Grok PKCE OAuth config and token mapping over `@corbits/oauth-core`, base URLs for the OAuth CLI chat proxy and plain API keys, and a Responses adapter for xAI's CLI chat proxy over `@corbits/openai-responses`. It does not run a login or manage a session — the host wires those from the two dependency packages.
 
-## Quickstart
+## Runtime support
 
 Bun >= 1.2 runs the published TypeScript source. Node >= 24 is an engines floor for tooling; native Node does not load this extensionless TypeScript source as-is. `@intx/inference` and `@intx/types` are peer dependencies and must resolve to the host's own copy.
+
+## Quickstart
 
 ```sh
 npm add @corbits/xai-provider
@@ -13,9 +15,16 @@ yarn add @corbits/xai-provider
 bun add @corbits/xai-provider
 ```
 
+Register the adapter under the host's provider id, then build it for a source. `xaiOAuthConfig`, `exchangeXaiCode`, and `refreshXaiTokens` plug into `@corbits/oauth-core`'s `buildAuthorizeUrl`, `exchangeCode`, and `refreshTokenRequest`. Persistence is the host (Interchange `oauth_token` or OS vault).
+
 ```ts
 import type { AdapterManifest } from "@intx/inference";
-import { XAI_PROVIDER } from "@corbits/xai-provider";
+import type { LastCycleSource } from "@intx/types/runtime";
+import {
+  XAI_DEFAULT_MODELS,
+  XAI_PROVIDER,
+  createXaiResponsesAdapter,
+} from "@corbits/xai-provider";
 
 // Host-owned: register the adapter under the host's provider id.
 export const inferenceManifest: AdapterManifest = [
@@ -25,17 +34,6 @@ export const inferenceManifest: AdapterManifest = [
     export: "createXaiResponsesAdapter",
   },
 ];
-```
-
-`xaiOAuthConfig`, `exchangeXaiCode`, and `refreshXaiTokens` plug into `@corbits/oauth-core`'s `buildAuthorizeUrl`, `exchangeCode`, and `refreshTokenRequest`. Persistence is the host (Interchange `oauth_token` or OS vault).
-
-```ts
-import type { LastCycleSource } from "@intx/types/runtime";
-import {
-  XAI_DEFAULT_MODELS,
-  XAI_PROVIDER,
-  createXaiResponsesAdapter,
-} from "@corbits/xai-provider";
 
 const source: LastCycleSource = {
   sourceId: "xai/1",
