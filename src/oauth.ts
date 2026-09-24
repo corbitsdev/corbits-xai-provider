@@ -15,7 +15,7 @@ import {
   XAI_SCOPES,
   XAI_TOKEN_TIMEOUT_MS,
   XAI_TOKEN_URL,
-} from "./constants";
+} from "./constants.js";
 
 /** Tokens issued by xAI's OAuth server: the shared base shape plus an `idToken`. */
 export type XaiTokens = BaseTokens & { idToken?: string };

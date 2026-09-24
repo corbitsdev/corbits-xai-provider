@@ -11,7 +11,7 @@ import {
   XAI_SESSION_ID_OPTION,
   XAI_USER_AGENT,
   XAI_USER_ID_OPTION,
-} from "./constants";
+} from "./constants.js";
 
 // Mirrors the grok CLI's own /v1/responses request (captured live): the
 // system prompt rides as a leading `system` input message with plain string

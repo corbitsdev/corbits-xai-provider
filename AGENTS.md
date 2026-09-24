@@ -31,15 +31,18 @@ bun install
 bun run check    # typecheck + lint + format:check + test
 ```
 
-`@corbits/oauth-core` and `@corbits/openai-responses` resolve from their
-GitHub repos, so `bun install` needs those repos pushed. To work against an
-unpushed local checkout of either, `bun link` it here; a later `bun install`
-re-resolves from git and drops the link.
+`@corbits/oauth-core` and `@corbits/openai-responses` resolve from npm
+(`^0.1.0`). To work against an unpushed local checkout of either, `bun link`
+it here; a later `bun install` re-resolves from the registry and drops the
+link.
 
 ## Distribution
 
-The package ships TypeScript source: `exports` points at `src/index.ts`,
-there is no build step and no `dist/`. Consumers install it with
-`bun add @corbits/xai-provider` and Bun runs the source as-is. `bun.lock`
-is committed; the two `@corbits/*` dependencies still resolve from their
-GitHub repos and switch to npm version ranges at publish time.
+The package ships compiled output: `bun run build` (`tsc -p
+tsconfig.build.json`) emits `dist/` (JS + declarations + sourcemaps, tests
+excluded), `exports` maps `.` to `dist` via the types/import/default triple,
+and `files` ships `dist`-only. `prepack` rebuilds `dist/` so the published
+tarball never carries `src/`. The two `@corbits/*` dependencies resolve from
+npm (`^0.1.0`), so installs are git-free. Relative imports in `src/` carry
+explicit `.js` suffixes so the emitted ESM runs under Node without a
+rewrite step — never add a build-time rewrite script or a bundler.

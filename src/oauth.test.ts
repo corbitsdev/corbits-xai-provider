@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { xaiUserIdFromAccessToken } from "./index";
+import { xaiUserIdFromAccessToken } from "./index.js";
 
 function jwtWithPayload(payload: unknown): string {
   const header = Buffer.from(JSON.stringify({ alg: "none" })).toString(

@@ -4,7 +4,7 @@ xAI Grok PKCE OAuth config and token mapping to slot into `@corbits/oauth-core`'
 
 ## Runtime support
 
-Bun >= 1.2 runs the published TypeScript source. Node >= 24 is an engines floor for tooling; native Node does not load this extensionless TypeScript source as-is. `@intx/inference` and `@intx/types` are peer dependencies and must resolve to the host's own copy.
+The published tarball ships compiled `dist/` (ESM + declarations), so both Bun >= 1.2 and Node >= 24 run it. `@intx/inference` and `@intx/types` are peer dependencies and must resolve to the host's own copy.
 
 ## Quickstart
 
