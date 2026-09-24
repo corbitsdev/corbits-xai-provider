@@ -32,9 +32,11 @@ bun run check    # typecheck + lint + format:check + test
 ```
 
 `@corbits/oauth-core` and `@corbits/openai-responses` are peer dependencies
-(`^0.1.0`) — the host provides them. `devDependencies` carries `github:`
-stand-ins for both so local `bun run check` resolves; a later `bun install`
-re-resolves and drops any link. To work against an unpushed local checkout of
+(`^0.1.0`) — the host provides them. `devDependencies` mirrors the same
+`^0.1.0` npm ranges so installs are git-free. The siblings are still
+unpublished, so local `bun run check` verification temporarily swaps in
+`file:` stand-ins and reverts before commit — never commit stand-in paths or
+the lockfile churn they cause. To work against an unpushed local checkout of
 either, `bun link` it here.
 
 ## Distribution

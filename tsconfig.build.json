@@ -1,6 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "allowImportingTsExtensions": false,
+    "composite": false,
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "noEmit": false,

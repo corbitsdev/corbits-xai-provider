@@ -42,8 +42,8 @@
     "@intx/types": ">=0.4.0"
   },
   "devDependencies": {
-    "@corbits/oauth-core": "github:corbitsdev/corbits-oauth-core#3028f8604155eee63f5a1711f0d4022d7984e3f7",
-    "@corbits/openai-responses": "github:corbitsdev/corbits-openai-responses",
+    "@corbits/oauth-core": "^0.1.0",
+    "@corbits/openai-responses": "^0.1.0",
     "@eslint/js": "9.34.0",
     "@intx/inference": "0.4.0",
     "@intx/types": "0.4.0",
