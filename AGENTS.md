@@ -16,7 +16,7 @@ reimplementing OAuth or the Responses wire protocol.
 
 ## Rules
 
-- Consume `@intx/*` (peer dependency) and the two `@corbits/*` dependencies (`github:` specifiers) as packages only — never vendor or fork them.
+- Consume `@intx/*` and the two `@corbits/*` packages (all peer dependencies) as packages only — never vendor or fork them.
 - Parse every trust boundary with arktype (JWT payload); never `as T` untrusted input.
 - `exactOptionalPropertyTypes` is on: omit optional keys, never assign `undefined` to them.
 - No product strings baked in; the x-grok-\* headers and user-agent are xAI wire requirements, not branding.
@@ -31,21 +31,21 @@ bun install
 bun run check    # typecheck + lint + format:check + test
 ```
 
-`@corbits/oauth-core` and `@corbits/openai-responses` resolve from npm
-(`^0.1.0`). To work against an unpushed local checkout of either, `bun link`
-it here; a later `bun install` re-resolves from the registry and drops the
-link.
+`@corbits/oauth-core` and `@corbits/openai-responses` are peer dependencies
+(`^0.1.0`) — the host provides them. `devDependencies` carries `github:`
+stand-ins for both so local `bun run check` resolves; a later `bun install`
+re-resolves and drops any link. To work against an unpushed local checkout of
+either, `bun link` it here.
 
 ## Distribution
 
 The package ships compiled output: `bun run build` (`tsc -p
-tsconfig.build.json`) emits `dist/` (JS + declarations + sourcemaps, tests
-excluded), and `prepack` rebuilds `dist/` on every pack. `exports` keeps an
-`intx-src` condition pointing at `src/index.ts` for Bun-based Interchange
-hosts that consume TypeScript source directly, while `types`/`default` serve
-the compiled `dist` output to every other runtime — native Node >= 24 loads
-`dist` as-is. Only `dist` ships (`files` is dist-only). The two `@corbits/*`
-dependencies resolve from npm (`^0.1.0`), so installs are git-free. Relative
-imports in `src/` carry explicit `.js` suffixes so the emitted ESM runs under
-Node without a rewrite step — never add a build-time rewrite script or a
-bundler.
+tsconfig.build.json`, NodeNext, no sourcemaps) emits `dist/` (JS +
+declarations, tests excluded), and `prepack` rebuilds `dist/` on every pack.
+`exports` maps `.` to `dist` via the types/default pair (`main` agrees), so
+both Bun >= 1.2 and native Node >= 24 load the compiled output — no
+source-consumption condition. Only `dist` ships (`files` is dist-only). The
+two `@corbits/*` peers resolve from npm (`^0.1.0`), so installs are git-free.
+Relative imports in `src/` carry explicit `.js` suffixes so the emitted ESM
+runs under Node without a rewrite step — never add a build-time rewrite
+script or a bundler.
