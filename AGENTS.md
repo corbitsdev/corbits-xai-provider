@@ -40,9 +40,12 @@ link.
 
 The package ships compiled output: `bun run build` (`tsc -p
 tsconfig.build.json`) emits `dist/` (JS + declarations + sourcemaps, tests
-excluded), `exports` maps `.` to `dist` via the types/import/default triple,
-and `files` ships `dist`-only. `prepack` rebuilds `dist/` so the published
-tarball never carries `src/`. The two `@corbits/*` dependencies resolve from
-npm (`^0.1.0`), so installs are git-free. Relative imports in `src/` carry
-explicit `.js` suffixes so the emitted ESM runs under Node without a
-rewrite step — never add a build-time rewrite script or a bundler.
+excluded), and `prepack` rebuilds `dist/` on every pack. `exports` keeps an
+`intx-src` condition pointing at `src/index.ts` for Bun-based Interchange
+hosts that consume TypeScript source directly, while `types`/`default` serve
+the compiled `dist` output to every other runtime — native Node >= 24 loads
+`dist` as-is. Only `dist` ships (`files` is dist-only). The two `@corbits/*`
+dependencies resolve from npm (`^0.1.0`), so installs are git-free. Relative
+imports in `src/` carry explicit `.js` suffixes so the emitted ESM runs under
+Node without a rewrite step — never add a build-time rewrite script or a
+bundler.
