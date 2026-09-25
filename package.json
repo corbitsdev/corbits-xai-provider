@@ -6,9 +6,10 @@
   "author": "Sawyer Cutler <sawyer@dirtroad.dev>",
   "type": "module",
   "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
   "files": [
-    "src",
-    "!src/**/*.test.ts",
+    "dist",
     "README.md",
     "LICENSE"
   ],
@@ -16,10 +17,15 @@
     "access": "public"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json",
+    "prepack": "bun run build",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -27,15 +33,17 @@
     "check": "bun run typecheck && bun run lint && bun run format:check && bun run test"
   },
   "dependencies": {
-    "@corbits/oauth-core": "github:corbitsdev/corbits-oauth-core#3028f8604155eee63f5a1711f0d4022d7984e3f7",
-    "@corbits/openai-responses": "github:corbitsdev/corbits-openai-responses",
-    "arktype": "2.2.3"
+    "arktype": "^2.2.3"
   },
   "peerDependencies": {
+    "@corbits/oauth-core": "^0.1.0",
+    "@corbits/openai-responses": "^0.1.0",
     "@intx/inference": ">=0.4.0",
     "@intx/types": ">=0.4.0"
   },
   "devDependencies": {
+    "@corbits/oauth-core": "^0.1.0",
+    "@corbits/openai-responses": "^0.1.0",
     "@eslint/js": "9.34.0",
     "@intx/inference": "0.4.0",
     "@intx/types": "0.4.0",

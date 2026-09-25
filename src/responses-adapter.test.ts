@@ -2,7 +2,7 @@ import { BEARER_CREDENTIAL_SENTINEL } from "@intx/inference";
 import type { ConversationTurn, LastCycleSource } from "@intx/types/runtime";
 import { type } from "arktype";
 import { describe, expect, test } from "bun:test";
-import { createXaiResponsesAdapter } from "./index";
+import { createXaiResponsesAdapter } from "./index.js";
 
 // Pinned literally rather than imported: neither the CLI-proxy path nor the
 // client-identification header values are on the package's public surface,

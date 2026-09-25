@@ -1,4 +1,4 @@
-export * from "./constants";
+export * from "./constants.js";
 
 export {
   xaiOAuthConfig,
@@ -7,9 +7,9 @@ export {
   refreshXaiTokens,
   xaiUserIdFromAccessToken,
   type XaiTokens,
-} from "./oauth";
+} from "./oauth.js";
 
 export {
   createXaiResponsesAdapter,
   xaiResponsesQuirks,
-} from "./responses-adapter";
+} from "./responses-adapter.js";

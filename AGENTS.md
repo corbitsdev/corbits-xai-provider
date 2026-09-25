@@ -16,7 +16,7 @@ reimplementing OAuth or the Responses wire protocol.
 
 ## Rules
 
-- Consume `@intx/*` (peer dependency) and the two `@corbits/*` dependencies (`github:` specifiers) as packages only — never vendor or fork them.
+- Consume `@intx/*` and the two `@corbits/*` packages (all peer dependencies) as packages only — never vendor or fork them.
 - Parse every trust boundary with arktype (JWT payload); never `as T` untrusted input.
 - `exactOptionalPropertyTypes` is on: omit optional keys, never assign `undefined` to them.
 - No product strings baked in; the x-grok-\* headers and user-agent are xAI wire requirements, not branding.
@@ -31,15 +31,23 @@ bun install
 bun run check    # typecheck + lint + format:check + test
 ```
 
-`@corbits/oauth-core` and `@corbits/openai-responses` resolve from their
-GitHub repos, so `bun install` needs those repos pushed. To work against an
-unpushed local checkout of either, `bun link` it here; a later `bun install`
-re-resolves from git and drops the link.
+`@corbits/oauth-core` and `@corbits/openai-responses` are peer dependencies
+(`^0.1.0`) — the host provides them. `devDependencies` mirrors the same
+`^0.1.0` npm ranges so installs are git-free. The siblings are still
+unpublished, so local `bun run check` verification temporarily swaps in
+`file:` stand-ins and reverts before commit — never commit stand-in paths or
+the lockfile churn they cause. To work against an unpushed local checkout of
+either, `bun link` it here.
 
 ## Distribution
 
-The package ships TypeScript source: `exports` points at `src/index.ts`,
-there is no build step and no `dist/`. Consumers install it with
-`bun add @corbits/xai-provider` and Bun runs the source as-is. `bun.lock`
-is committed; the two `@corbits/*` dependencies still resolve from their
-GitHub repos and switch to npm version ranges at publish time.
+The package ships compiled output: `bun run build` (`tsc -p
+tsconfig.build.json`, NodeNext, no sourcemaps) emits `dist/` (JS +
+declarations, tests excluded), and `prepack` rebuilds `dist/` on every pack.
+`exports` maps `.` to `dist` via the types/default pair (`main` agrees), so
+both Bun >= 1.2 and native Node >= 24 load the compiled output — no
+source-consumption condition. Only `dist` ships (`files` is dist-only). The
+two `@corbits/*` peers resolve from npm (`^0.1.0`), so installs are git-free.
+Relative imports in `src/` carry explicit `.js` suffixes so the emitted ESM
+runs under Node without a rewrite step — never add a build-time rewrite
+script or a bundler.
