@@ -2,25 +2,33 @@
   "name": "@corbits/xai-provider",
   "version": "0.1.0",
   "description": "xAI (Grok) OAuth config, token mapping, and a Responses adapter configured for xAI's CLI chat proxy.",
+  "homepage": "https://github.com/corbitsdev/corbits-xai-provider",
+  "bugs": {
+    "url": "https://github.com/corbitsdev/corbits-xai-provider/issues"
+  },
   "license": "LGPL-2.1-only",
   "author": "Sawyer Cutler <sawyer@dirtroad.dev>",
-  "type": "module",
-  "sideEffects": false,
-  "types": "./dist/index.d.ts",
-  "main": "./dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/corbitsdev/corbits-xai-provider.git"
+  },
   "files": [
     "dist",
     "README.md",
     "LICENSE"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -36,12 +44,6 @@
   "dependencies": {
     "arktype": "^2.2.3"
   },
-  "peerDependencies": {
-    "@corbits/oauth-core": "^0.1.0",
-    "@corbits/openai-responses": "^0.1.0",
-    "@intx/inference": "^0.4.0",
-    "@intx/types": "^0.4.0"
-  },
   "devDependencies": {
     "@corbits/oauth-core": "0.1.0",
     "@corbits/openai-responses": "0.1.0",
@@ -52,16 +54,14 @@
     "oxlint": "1.85.0",
     "typescript": "6.0.3"
   },
+  "peerDependencies": {
+    "@corbits/oauth-core": "^0.1.0",
+    "@corbits/openai-responses": "^0.1.0",
+    "@intx/inference": "^0.4.0",
+    "@intx/types": "^0.4.0"
+  },
   "engines": {
     "bun": ">=1.2.0",
     "node": ">=24"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/corbitsdev/corbits-xai-provider.git"
-  },
-  "homepage": "https://github.com/corbitsdev/corbits-xai-provider",
-  "bugs": {
-    "url": "https://github.com/corbitsdev/corbits-xai-provider/issues"
   }
 }
