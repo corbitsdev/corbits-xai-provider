@@ -11,7 +11,7 @@ xAI Grok for `@intx/inference`: the grok CLI OAuth client config and token mappi
 ## Install
 
 ```bash
-bun add @corbits/xai-provider @corbits/oauth-core@^0.1.0 @corbits/openai-responses@^0.1.0 @intx/inference@^0.4.0 @intx/types@^0.4.0
+bun add @corbits/xai-provider @corbits/oauth-core@^0.2.0 @corbits/openai-responses@^0.2.0 @intx/inference@^0.4.0 @intx/types@^0.4.0
 ```
 
 Runs on Bun >= 1.2 or Node >= 24.
