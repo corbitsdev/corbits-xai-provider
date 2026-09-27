@@ -23,4 +23,12 @@ describe("xAI oauth — user id decoding", () => {
       xaiUserIdFromAccessToken(jwtWithPayload({ sub: 123 })),
     ).toBeUndefined();
   });
+
+  test("treats a sub carrying CR, LF or NUL as absent", () => {
+    for (const bad of ["u\r\nx-grok-user-id: victim", "u\nx", "u\u0000x"]) {
+      expect(
+        xaiUserIdFromAccessToken(jwtWithPayload({ sub: bad })),
+      ).toBeUndefined();
+    }
+  });
 });

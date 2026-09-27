@@ -93,5 +93,10 @@ export function xaiUserIdFromAccessToken(access: string): string | undefined {
     return undefined;
   }
   const payload = AccessTokenPayload(decoded);
-  return payload instanceof type.errors ? undefined : payload.sub;
+  if (payload instanceof type.errors) return undefined;
+  // The sub becomes a request header value; CR, LF or NUL would split or
+  // truncate it, so such a claim is treated as absent.
+  return payload.sub === undefined || /[\r\n\0]/.test(payload.sub)
+    ? undefined
+    : payload.sub;
 }
