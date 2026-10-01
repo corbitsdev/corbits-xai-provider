@@ -1,6 +1,6 @@
 {
   "name": "@corbits/xai-provider",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "xAI (Grok) OAuth config, token mapping, and a Responses adapter configured for xAI's CLI chat proxy.",
   "keywords": [
     "corbits",
@@ -52,8 +52,8 @@
     "arktype": "^2.2.3"
   },
   "devDependencies": {
-    "@corbits/oauth-core": "0.2.0",
-    "@corbits/openai-responses": "0.2.0",
+    "@corbits/oauth-core": "0.3.0",
+    "@corbits/openai-responses": "0.2.1",
     "@intx/inference": "0.4.0",
     "@intx/types": "0.4.0",
     "@types/bun": "1.3.14",
@@ -62,8 +62,8 @@
     "typescript": "6.0.3"
   },
   "peerDependencies": {
-    "@corbits/oauth-core": "^0.2.0",
-    "@corbits/openai-responses": "^0.2.0",
+    "@corbits/oauth-core": "^0.3.0",
+    "@corbits/openai-responses": "^0.2.1",
     "@intx/inference": "^0.4.0",
     "@intx/types": "^0.4.0"
   },
