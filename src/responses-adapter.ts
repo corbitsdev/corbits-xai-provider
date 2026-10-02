@@ -4,11 +4,14 @@ import {
 } from "@corbits/openai-responses";
 import type { AdapterFactory } from "@intx/inference";
 import {
+  XAI_AUTHENTICATE_RESPONSE,
   XAI_CLIENT_IDENTIFIER,
+  XAI_CLIENT_MODE,
   XAI_CLIENT_VERSION,
   XAI_REASONING_EFFORT_OPTION,
   XAI_RESPONSES_PATH,
   XAI_SESSION_ID_OPTION,
+  XAI_TOKEN_AUTH,
   XAI_USER_AGENT,
   XAI_USER_ID_OPTION,
 } from "./constants.js";
@@ -27,6 +30,9 @@ export const xaiResponsesQuirks: ResponsesQuirks = {
       "user-agent": XAI_USER_AGENT,
       "x-grok-client-identifier": XAI_CLIENT_IDENTIFIER,
       "x-grok-client-version": XAI_CLIENT_VERSION,
+      "x-grok-client-mode": XAI_CLIENT_MODE,
+      "x-xai-token-auth": XAI_TOKEN_AUTH,
+      "x-authenticateresponse": XAI_AUTHENTICATE_RESPONSE,
     },
     modelHeader: "x-grok-model-override",
     fromOption: [{ optionKey: XAI_USER_ID_OPTION, header: "x-grok-user-id" }],

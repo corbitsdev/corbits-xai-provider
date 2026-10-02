@@ -44,6 +44,10 @@ export const XAI_CLIENT_IDENTIFIER = "grok-shell";
 // (1.0.13+ as of 2026-09-30) return HTTP 426 Upgrade Required.
 export const XAI_CLIENT_VERSION = "1.0.46";
 export const XAI_USER_AGENT = `grok-shell/${XAI_CLIENT_VERSION} (macos; aarch64)`;
+export const XAI_CLIENT_MODE = "interactive";
+// Required by the CLI chat proxy auth middleware on known proxy URLs.
+export const XAI_TOKEN_AUTH = "xai-grok-cli";
+export const XAI_AUTHENTICATE_RESPONSE = "authenticate-response";
 
 // xAI issues ~1-hour access tokens; a host calling @corbits/oauth-core's
 // createTokenSession should refresh this far ahead of expiry so a
