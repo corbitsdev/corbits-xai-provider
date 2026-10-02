@@ -11,7 +11,10 @@ import { createXaiResponsesAdapter } from "./index.js";
 const RESPONSES_PATH = "/responses";
 const CLIENT_IDENTIFIER = "grok-shell";
 const CLIENT_VERSION = "1.0.46";
+const CLIENT_MODE = "interactive";
 const USER_AGENT = "grok-shell/1.0.46 (macos; aarch64)";
+const TOKEN_AUTH = "xai-grok-cli";
+const AUTHENTICATE_RESPONSE = "authenticate-response";
 
 const source: LastCycleSource = {
   sourceId: "test/xai",
@@ -64,6 +67,9 @@ describe("createXaiResponsesAdapter", () => {
       "user-agent": USER_AGENT,
       "x-grok-client-identifier": CLIENT_IDENTIFIER,
       "x-grok-client-version": CLIENT_VERSION,
+      "x-grok-client-mode": CLIENT_MODE,
+      "x-xai-token-auth": TOKEN_AUTH,
+      "x-authenticateresponse": AUTHENTICATE_RESPONSE,
       "x-grok-model-override": "grok-4.5",
       "x-grok-user-id": "user-123",
     });

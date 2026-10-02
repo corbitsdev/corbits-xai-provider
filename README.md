@@ -101,7 +101,7 @@ process.stdout.write("\n");
 | `XAI_REASONING_EFFORT_OPTION`                            | `providerOptions` key sent as `reasoning.effort`.                                               |
 | `XAI_REFRESH_SKEW_MS`                                    | Refresh this long before expiry.                                                                |
 
-The OAuth and client-identity constants behind `xaiOAuthConfig` and the adapter (`XAI_CLIENT_ID`, `XAI_AUTHORIZE_URL`, `XAI_TOKEN_URL`, `XAI_REDIRECT_URI`, `XAI_SCOPES`, `XAI_TOKEN_TIMEOUT_MS`, `XAI_RESPONSES_PATH`, `XAI_CLIENT_IDENTIFIER`, `XAI_CLIENT_VERSION`, `XAI_USER_AGENT`) are exported too.
+The OAuth and client-identity constants behind `xaiOAuthConfig` and the adapter (`XAI_CLIENT_ID`, `XAI_AUTHORIZE_URL`, `XAI_TOKEN_URL`, `XAI_REDIRECT_URI`, `XAI_SCOPES`, `XAI_TOKEN_TIMEOUT_MS`, `XAI_RESPONSES_PATH`, `XAI_CLIENT_IDENTIFIER`, `XAI_CLIENT_VERSION`, `XAI_USER_AGENT`, `XAI_CLIENT_MODE`, `XAI_TOKEN_AUTH`, `XAI_AUTHENTICATE_RESPONSE`) are exported too.
 
 ## Using with Interchange
 
