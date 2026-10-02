@@ -10,8 +10,8 @@ import { createXaiResponsesAdapter } from "./index.js";
 // not to re-export more internals to reach them.
 const RESPONSES_PATH = "/responses";
 const CLIENT_IDENTIFIER = "grok-shell";
-const CLIENT_VERSION = "0.2.93";
-const USER_AGENT = "grok-shell/0.2.93 (macos; aarch64)";
+const CLIENT_VERSION = "1.0.46";
+const USER_AGENT = "grok-shell/1.0.46 (macos; aarch64)";
 
 const source: LastCycleSource = {
   sourceId: "test/xai",

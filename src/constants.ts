@@ -38,7 +38,9 @@ export const XAI_DEFAULT_MODELS = [
 export const XAI_RESPONSES_PATH = "/responses";
 
 export const XAI_CLIENT_IDENTIFIER = "grok-shell";
-export const XAI_CLIENT_VERSION = "0.2.93";
+// The proxy version-gates this header. Values below the current floor
+// (1.0.13+ as of 2026-09-30) return HTTP 426 Upgrade Required.
+export const XAI_CLIENT_VERSION = "1.0.46";
 export const XAI_USER_AGENT = `grok-shell/${XAI_CLIENT_VERSION} (macos; aarch64)`;
 
 // xAI issues ~1-hour access tokens; a host calling @corbits/oauth-core's
