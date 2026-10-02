@@ -27,19 +27,27 @@ export const XAI_OAUTH_PROXY_BASE_URL = "https://cli-chat-proxy.grok.com/v1";
 /** Base URL for a plain xAI API key credential (not an OAuth token). */
 export const XAI_API_KEY_BASE_URL = "https://api.x.ai/v1";
 
-// Grok-cli OAuth credentials only accept model ids the CLI chat proxy serves;
-// keep the catalog aligned with the CLI's own listing.
+// Grok-cli OAuth credentials only accept model ids the CLI chat proxy serves.
+// Order matches an authenticated GET /v1/models from Grok CLI 1.0.46; the
+// first entry is the host default.
 export const XAI_DEFAULT_MODELS = [
-  "grok-4.5",
+  "grok-4.7",
+  "grok-4.7-build-fast",
   "grok-4.6",
-  "grok-composer-2.5-fast",
+  "grok-4.5",
 ] as const;
 
 export const XAI_RESPONSES_PATH = "/responses";
 
 export const XAI_CLIENT_IDENTIFIER = "grok-shell";
-export const XAI_CLIENT_VERSION = "0.2.93";
+// The proxy version-gates this header. Values below the current floor
+// (1.0.13+ as of 2026-09-30) return HTTP 426 Upgrade Required.
+export const XAI_CLIENT_VERSION = "1.0.46";
 export const XAI_USER_AGENT = `grok-shell/${XAI_CLIENT_VERSION} (macos; aarch64)`;
+export const XAI_CLIENT_MODE = "interactive";
+// Required by the CLI chat proxy auth middleware on known proxy URLs.
+export const XAI_TOKEN_AUTH = "xai-grok-cli";
+export const XAI_AUTHENTICATE_RESPONSE = "authenticate-response";
 
 // xAI issues ~1-hour access tokens; a host calling @corbits/oauth-core's
 // createTokenSession should refresh this far ahead of expiry so a
