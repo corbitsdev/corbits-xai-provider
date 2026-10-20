@@ -10,9 +10,9 @@ import { createXaiResponsesAdapter } from "./index.js";
 // not to re-export more internals to reach them.
 const RESPONSES_PATH = "/responses";
 const CLIENT_IDENTIFIER = "grok-shell";
-const CLIENT_VERSION = "1.0.46";
+const CLIENT_VERSION = "1.0.62";
 const CLIENT_MODE = "interactive";
-const USER_AGENT = "grok-shell/1.0.46 (macos; aarch64)";
+const USER_AGENT = "grok-shell/1.0.62 (macos; aarch64)";
 const TOKEN_AUTH = "xai-grok-cli";
 const AUTHENTICATE_RESPONSE = "authenticate-response";
 
