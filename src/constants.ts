@@ -42,7 +42,7 @@ export const XAI_RESPONSES_PATH = "/responses";
 export const XAI_CLIENT_IDENTIFIER = "grok-shell";
 // The proxy version-gates this header. Values below the current floor
 // (1.0.13+ as of 2026-09-30) return HTTP 426 Upgrade Required.
-export const XAI_CLIENT_VERSION = "1.0.46";
+export const XAI_CLIENT_VERSION = "1.0.62";
 export const XAI_USER_AGENT = `grok-shell/${XAI_CLIENT_VERSION} (macos; aarch64)`;
 export const XAI_CLIENT_MODE = "interactive";
 // Required by the CLI chat proxy auth middleware on known proxy URLs.
