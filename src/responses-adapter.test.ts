@@ -90,3 +90,23 @@ describe("createXaiResponsesAdapter", () => {
     expect(parsed).not.toHaveProperty("temperature");
   });
 });
+
+describe("createXaiResponsesAdapter — source quirks", () => {
+  test("sends the userId quirk as x-grok-user-id, and the option overrides it", () => {
+    const adapter = createXaiResponsesAdapter(source, { userId: "user-quirk" });
+    expect(
+      adapter.buildRequest(turns, "grok-4.5", {}).headers["x-grok-user-id"],
+    ).toBe("user-quirk");
+    expect(
+      adapter.buildRequest(turns, "grok-4.5", {
+        providerOptions: { xaiUserId: "user-option" },
+      }).headers["x-grok-user-id"],
+    ).toBe("user-option");
+  });
+
+  test("rejects a userId that would split the header", () => {
+    expect(() => createXaiResponsesAdapter(source, { userId: "a\nb" })).toThrow(
+      /invalid quirks/,
+    );
+  });
+});

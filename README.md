@@ -82,24 +82,24 @@ process.stdout.write("\n");
 
 ## Reference
 
-| Export                                                   | Description                                                                                     |
-| -------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `createXaiResponsesAdapter`                              | `AdapterFactory` for the CLI chat proxy. Per-source `quirks` are ignored.                       |
-| `xaiResponsesQuirks`                                     | The `ResponsesQuirks` the adapter is built from.                                                |
-| `xaiOAuthConfig`                                         | `OAuthClientConfig` for `@corbits/oauth-core`: client id, endpoints, loopback redirect, scopes. |
-| `exchangeXaiCode(code, verifier, now, fetch?)`           | Redeems an authorization code for `XaiTokens`.                                                  |
-| `refreshXaiTokens(refresh, now, fetch?)`                 | Refreshes `XaiTokens`, keeping the old refresh token when the response omits one.               |
-| `xaiTokensFromResponse(response, now, previousRefresh?)` | Maps a token endpoint response to `XaiTokens`, carrying `id_token` as `idToken`.                |
-| `xaiUserIdFromAccessToken(access)`                       | Reads the JWT `sub` claim. Returns `undefined` on malformed input; does not verify signatures.  |
-| `XaiTokens`                                              | Type.                                                                                           |
-| `XAI_PROVIDER`                                           | The `"xai"` provider id.                                                                        |
-| `XAI_OAUTH_PROXY_BASE_URL`                               | `https://cli-chat-proxy.grok.com/v1`, the base URL for OAuth credentials.                       |
-| `XAI_API_KEY_BASE_URL`                                   | `https://api.x.ai/v1`, the base URL for API key credentials.                                    |
-| `XAI_DEFAULT_MODELS`                                     | The model ids the CLI chat proxy serves.                                                        |
-| `XAI_USER_ID_OPTION`                                     | `providerOptions` key sent as the `x-grok-user-id` header.                                      |
-| `XAI_SESSION_ID_OPTION`                                  | `providerOptions` key sent as `prompt_cache_key`.                                               |
-| `XAI_REASONING_EFFORT_OPTION`                            | `providerOptions` key sent as `reasoning.effort`.                                               |
-| `XAI_REFRESH_SKEW_MS`                                    | Refresh this long before expiry.                                                                |
+| Export                                                   | Description                                                                                                   |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `createXaiResponsesAdapter`                              | `AdapterFactory` for the CLI chat proxy. Per-source `quirks` accept only `{ userId? }`; any other key throws. |
+| `xaiResponsesQuirks`                                     | The `ResponsesQuirks` the adapter is built from.                                                              |
+| `xaiOAuthConfig`                                         | `OAuthClientConfig` for `@corbits/oauth-core`: client id, endpoints, loopback redirect, scopes.               |
+| `exchangeXaiCode(code, verifier, now, fetch?)`           | Redeems an authorization code for `XaiTokens`.                                                                |
+| `refreshXaiTokens(refresh, now, fetch?)`                 | Refreshes `XaiTokens`, keeping the old refresh token when the response omits one.                             |
+| `xaiTokensFromResponse(response, now, previousRefresh?)` | Maps a token endpoint response to `XaiTokens`, carrying `id_token` as `idToken`.                              |
+| `xaiUserIdFromAccessToken(access)`                       | Reads the JWT `sub` claim. Returns `undefined` on malformed input; does not verify signatures.                |
+| `XaiTokens`                                              | Type.                                                                                                         |
+| `XAI_PROVIDER`                                           | The `"xai"` provider id.                                                                                      |
+| `XAI_OAUTH_PROXY_BASE_URL`                               | `https://cli-chat-proxy.grok.com/v1`, the base URL for OAuth credentials.                                     |
+| `XAI_API_KEY_BASE_URL`                                   | `https://api.x.ai/v1`, the base URL for API key credentials.                                                  |
+| `XAI_DEFAULT_MODELS`                                     | The model ids the CLI chat proxy serves.                                                                      |
+| `XAI_USER_ID_OPTION`                                     | `providerOptions` key sent as the `x-grok-user-id` header.                                                    |
+| `XAI_SESSION_ID_OPTION`                                  | `providerOptions` key sent as `prompt_cache_key`.                                                             |
+| `XAI_REASONING_EFFORT_OPTION`                            | `providerOptions` key sent as `reasoning.effort`.                                                             |
+| `XAI_REFRESH_SKEW_MS`                                    | Refresh this long before expiry.                                                                              |
 
 The OAuth and client-identity constants behind `xaiOAuthConfig` and the adapter (`XAI_CLIENT_ID`, `XAI_AUTHORIZE_URL`, `XAI_TOKEN_URL`, `XAI_REDIRECT_URI`, `XAI_SCOPES`, `XAI_TOKEN_TIMEOUT_MS`, `XAI_RESPONSES_PATH`, `XAI_CLIENT_IDENTIFIER`, `XAI_CLIENT_VERSION`, `XAI_USER_AGENT`, `XAI_CLIENT_MODE`, `XAI_TOKEN_AUTH`, `XAI_AUTHENTICATE_RESPONSE`) are exported too.
 
@@ -141,7 +141,7 @@ const manifest: AdapterManifest = [
 export const deps = createDependencies(await loadAdapterRegistry(manifest));
 ```
 
-Each xAI source points at `XAI_OAUTH_PROXY_BASE_URL`, uses the OAuth access token as its credential, and picks a model from `XAI_DEFAULT_MODELS`. Pass `xaiUserIdFromAccessToken(token)` as `providerOptions[XAI_USER_ID_OPTION]`.
+Each xAI source points at `XAI_OAUTH_PROXY_BASE_URL`, uses the OAuth access token as its credential, and picks a model from `XAI_DEFAULT_MODELS`. Pass `xaiUserIdFromAccessToken(token)` as `providerOptions[XAI_USER_ID_OPTION]`, or, for an Interchange catalog source, which carries no `providerOptions`, as the source's `quirks: { userId }`. The option overrides the quirk. The quirk must match the credential's account, so re-set it when the credential is signed in to another account.
 
 ## License
 
